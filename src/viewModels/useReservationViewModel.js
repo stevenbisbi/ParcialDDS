@@ -1,5 +1,4 @@
-import { useState, useCallback } from "react";
-import Reservation from "../models/Reservation";
+import { useState } from "react";
 import reservationService from "../services/reservationService";
 import validationService from "../services/validationService";
 
@@ -8,63 +7,36 @@ export default function useReservationViewModel() {
   const [error, setError] = useState(null);
   const [confirmation, setConfirmation] = useState(null);
 
-  const createReservation = useCallback(async (formData) => {
+  const createReservation = async (formData) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Validaciones
       validationService.validateBusinessHours(formData.time);
       validationService.validateCapacity(formData.guests);
 
-      // Crear modelo
-      const reservation = new Reservation(formData);
+      const newReservation = await reservationService.createReservation(
+        formData
+      );
 
-      // Guardar reserva
-      await reservationService.saveReservation(reservation);
-
-      // Confirmación
       setConfirmation({
-        id: reservation.id,
-        date: reservation.date,
-        time: reservation.time,
-        message: `Reserva confirmada para ${reservation.date} a las ${reservation.time}`,
+        id: newReservation.id,
+        date: newReservation.date,
+        time: newReservation.time,
+        message: `Reserva confirmada para ${newReservation.date} a las ${newReservation.time}`,
       });
 
-      return reservation;
+      return newReservation;
     } catch (err) {
       setError(err.message);
       throw err;
     } finally {
       setIsLoading(false);
     }
-  }, []);
-
-  const cancelReservation = useCallback(async (reservationId) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const reservation = await reservationService.getReservation(
-        reservationId
-      );
-      if (!reservation) throw new Error("Reserva no encontrada");
-
-      const cancelledReservation = reservation.cancel();
-      await reservationService.saveReservation(cancelledReservation);
-
-      return true;
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  };
 
   return {
     createReservation,
-    cancelReservation,
     isLoading,
     error,
     confirmation,

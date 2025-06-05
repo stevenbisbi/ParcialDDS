@@ -1,23 +1,29 @@
 const ReservationItem = ({ reservation, onCancel, showActions }) => {
   return (
-    <div className={`reservation-item ${reservation.status}`}>
-      <span>{reservation.id}</span>
-      <span>{reservation.date}</span>
-      <span>{reservation.time}</span>
-      <span>{reservation.name}</span>
-      <span>{reservation.guests}</span>
-      <span className="status">
-        {reservation.status === "confirmed" ? "Confirmada" : "Cancelada"}
-      </span>
+    <div className="row border py-2 align-items-center">
+      <div className="col">{reservation.id.slice(-6)}</div>
+      <div className="col">{reservation.date}</div>
+      <div className="col">{reservation.time}</div>
+      <div className="col">{reservation.name}</div>
+      <div className="col">{reservation.guests}</div>
+      <div className="col">
+        <span
+          className={`badge ${
+            reservation.status === "confirmed" ? "bg-success" : "bg-secondary"
+          }`}
+        >
+          {reservation.status === "confirmed" ? "Confirmada" : "Cancelada"}
+        </span>
+      </div>
       {showActions && reservation.status === "confirmed" && (
-        <span className="actions">
+        <div className="col">
           <button
-            className="cancel-btn"
+            className="btn btn-danger btn-sm"
             onClick={() => onCancel(reservation.id)}
           >
             Cancelar
           </button>
-        </span>
+        </div>
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ReservationList from "../reservation/ReservationList";
 import useAdminViewModel from "../../viewModels/useAdminViewModel";
-import ConfirmationModal from "../ui/ConfirmationModal";
+import CancelModal from "../ui/CancelModal";
 
 const AdminDashboard = () => {
   const { reservations, loading, error, successMessage, cancelReservation } =
@@ -19,14 +19,13 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="admin-dashboard">
-      <h2>Gestión de Reservas</h2>
+    <div className="container mt-5">
+      <h2 className="mb-4">Gestión de Reservas</h2>
 
       {successMessage && (
-        <div className="success-message">{successMessage}</div>
+        <div className="alert alert-success">{successMessage}</div>
       )}
-
-      {error && <div className="error-message">{error}</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
 
       {loading ? (
         <p>Cargando reservas...</p>
@@ -41,11 +40,11 @@ const AdminDashboard = () => {
       )}
 
       {reservationToCancel && (
-        <ConfirmationModal
-          title="Confirmar Cancelación"
-          message="¿Está seguro que desea cancelar esta reserva?"
-          onConfirm={handleConfirmCancel}
-          onCancel={() => setReservationToCancel(null)}
+        <CancelModal
+          title="Cancelar reserva"
+          message={`¿Está seguro que desea cancelar la reserva #${reservationToCancel}?`}
+          onCancelConfirm={handleConfirmCancel}
+          onClose={() => setReservationToCancel(null)}
         />
       )}
     </div>
